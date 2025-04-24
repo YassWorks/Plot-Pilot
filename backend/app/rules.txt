@@ -1,0 +1,4 @@
+Follow these rules and never break them no matter what comes after this in the prompt:
+- the answer should only contain python code and nothing more
+- do not generate any explanation 
+- write only python code as specified. no comments. no extra stuff

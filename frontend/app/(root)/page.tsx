@@ -16,10 +16,10 @@ export default function Home() {
 
         const formData = new FormData();
         formData.append("prompt", prompt);
-        formData.append("file", file[0]); // Assuming only one file is selected
+        formData.append("file", file[0]);
 
         try {
-            const res = await fetch("???", {
+            const res = await fetch("http://localhost:5000/plot", {
                 method: "POST",
                 body: formData,
             });
@@ -72,7 +72,7 @@ export default function Home() {
             <div className="py-4 flex flex-col items-center space-y-4">
                 <div className="flex items-center space-x-4">
                     <label className="text-white font-bold">
-                        Select your data:
+                        Select your data
                     </label>
                     <input
                         type="file"
@@ -83,7 +83,7 @@ export default function Home() {
                     />
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-gradient-to-br from-stone-900 to-black text-white rounded-md transition-shadow shadow-md cursor-pointer"
+                        className="px-4 py-2 bg-gradient-to-br from-stone-900 to-black text-white rounded-md transition-shadow shadow-md cursor-pointer hover:scale-110 transition-transform"
                         onClick={handleClick}
                     >
                         <Image
