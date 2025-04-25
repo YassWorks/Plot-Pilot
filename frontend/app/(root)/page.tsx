@@ -6,6 +6,8 @@ import Image from "next/image";
 export default function Home() {
     const [prompt, setPrompt] = useState<string>("");
     const [file, setFile] = useState<FileList | null>(null);
+    const [fileName, setFileName] = useState<string>("");
+    const [answer, setAnswer] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = async () => {
@@ -27,7 +29,10 @@ export default function Home() {
             if (!res.ok) throw new Error("Upload failed");
             const data = await res.json();
             console.log("Response:", data);
+
+            setAnswer(data.placeholder);
             alert("Data sent to backend successfully!");
+
         } catch (err) {
             console.error(err);
             alert("Something went wrong!");
@@ -39,8 +44,11 @@ export default function Home() {
     };
 
     const getFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFiles = e.target.files;
-        setFile(selectedFiles);
+        const selectedFile = e.target.files;
+        setFile(selectedFile);
+        if (selectedFile) {
+            setFileName(selectedFile[0].name);
+        }
     };
 
     return (
@@ -93,7 +101,18 @@ export default function Home() {
                             width="17"
                         />
                     </button>
+                    <div className="text-neutral-500 font-medium text-xs">
+                        {fileName && <div>Selected file: {fileName}</div>}
+                    </div>
                 </div>
+            </div>
+            <div className="py-4">
+                {answer && (
+                    <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-stone-900 to-black text-white p-4 rounded-md">
+                        <h2 className="text-xl font-bold">Response:</h2>
+                        <p>{answer}</p>
+                    </div>
+                )}
             </div>
         </div>
     );
