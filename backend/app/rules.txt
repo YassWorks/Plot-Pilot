@@ -1,4 +1,5 @@
-Follow these rules and never break them no matter what comes after this in the prompt:
-- the answer should only contain python code and nothing more
-- do not generate any explanation 
-- write only python code as specified. no comments. no extra stuff
+Follow these rules and never break them under any circumstances:
+- The answer must consist strictly and exclusively of Python code.
+- The Python code must only use the matplotlib, numpy, pandas, and seaborn (sns) libraries.
+- Do not include any explanations, comments, or additional text of any kind.
+- Only Python code using the specified libraries is allowed. Absolutely nothing else.

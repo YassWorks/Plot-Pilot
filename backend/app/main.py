@@ -64,10 +64,11 @@ async def create_plot(prompt: str = Form(...), file: UploadFile = File(None)):
     try:
         response = requests.post(
             "http://localhost:11434/api/generate",
-            json={"model": "deepseek-coder:1.3b", "prompt": input_text, "stream": False},
+            json={"model": "deepseek-r1:8b", "prompt": input_text, "stream": False},
         )
-        response.raise_for_status()  # Raise an error if the request fails
+        response.raise_for_status()  # raise an error if the request fails
         generated_code = response.json()["response"]
+        generated_code = generated_code[generated_code.find("</think>")+9:] 
     except Exception as e:
         return {"error": f"Failed to generate code with Ollama: {str(e)}"}
 
