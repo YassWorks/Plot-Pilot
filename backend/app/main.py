@@ -1,11 +1,12 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+from helpers.handle_code import handle_code
+from helpers.sanitize import checkPrompt
 
 app = FastAPI(title="Plot Pilot API")
 
-# Add CORS middleware for frontend
+# add CORS middleware for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,10 +14,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-class FormData(BaseModel):
-    prompt: str
 
 
 @app.get("/")
@@ -60,16 +57,24 @@ async def create_plot(prompt: str = Form(...), file: UploadFile = File(None)):
     except Exception as e:
         return {"error": f"Error processing input: {str(e)}"}
 
-    # code
+    # code (using Ollama deepseek-r1:8b model for now)
     try:
+        is_allowed_prompt = checkPrompt(input_text)
+        if not is_allowed_prompt:
+            return {"error": "Prompt contains disallowed content. 🚩🚩"}
+
         response = requests.post(
             "http://localhost:11434/api/generate",
             json={"model": "deepseek-r1:8b", "prompt": input_text, "stream": False},
         )
         response.raise_for_status()  # raise an error if the request fails
         generated_code = response.json()["response"]
-        generated_code = generated_code[generated_code.find("</think>")+9:] 
+        
+        # specific to Ollama deepseek-r1:8b model only
+        generated_code = generated_code[generated_code.find("#START") + 6: -3]
+        
     except Exception as e:
         return {"error": f"Failed to generate code with Ollama: {str(e)}"}
 
-    return {"placeholder": generated_code}
+    handle_code(generated_code)
+    return {"message": "Order completed and ready!"}
