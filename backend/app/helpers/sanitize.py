@@ -2,4 +2,4 @@
 # before sending it to the model to concerve resources.
 
 def checkPrompt(prompt: str):
-    ...
+    return True

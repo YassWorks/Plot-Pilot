@@ -1,0 +1,28 @@
+
+services:
+  backend:
+    build:
+      context: . # Use the current directory as the build context
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount the Docker socket from the host into the container
+      # This allows the backend service (running in this container)
+      # to communicate with the Docker daemon on the host machine
+      # to build and run the 'executor' container.
+      # SECURITY WARNING: Granting access to the Docker socket is powerful.
+      # Ensure you trust the code running in the container.
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Add any environment variables your backend needs
+      # Example:
+      # - OLLAMA_API_URL=http://host.docker.internal:11434/api/generate
+      # Note: Use host.docker.internal to reach the host machine from the container if Ollama runs on the host
+      - DOCKER_HOST=unix:///var/run/docker.sock # Ensure docker client inside container uses the socket
+    networks: # Optional: define custom networks if needed later
+      - plotpilot_net
+
+# Optional: Define networks
+networks:
+  plotpilot_net:
+    driver: bridge
