@@ -70,7 +70,7 @@ if __name__ == "__main__":
     try:
         with open(code_file_path, "r") as f:
             user_code = f.read()
-            
+
         if "savefig" not in user_code:
             user_code += f"\nplt.savefig('{output_path}')"
             print("Appended plt.savefig call.", file=sys.stderr)

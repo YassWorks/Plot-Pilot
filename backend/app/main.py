@@ -6,6 +6,7 @@ from helpers.handle_code import handle_code
 from helpers.sanitize import checkPrompt
 import io
 from pathlib import Path
+import textwrap
 
 app = FastAPI(title="Plot Pilot API")
 
@@ -31,7 +32,7 @@ async def health_check():
 
 @app.post("/plot")
 async def create_plot(prompt: str = Form(...), file: UploadFile = File(None)):
-    
+
     # get file contents
     file_content_str: str | None = None
     try:
@@ -85,36 +86,63 @@ async def create_plot(prompt: str = Form(...), file: UploadFile = File(None)):
     input_text += "Save it using `plt.savefig('/app/output/plot.png')`. You don't need to show the plot using `plt.show()`.\n\n"
 
     # code generation (using Ollama deepseek-r1:8b model for now)
-    generated_code = None
-    try:
-        is_allowed_prompt = checkPrompt(prompt)
-        if not is_allowed_prompt:
-            return {"error": "Prompt contains disallowed content. 🚩🚩"}
+    
+    # placeholder for testing
+    generated_code = """
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import os
 
-        print("Sending request to Ollama...")
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": "deepseek-r1:8b", "prompt": input_text, "stream": False},
-            timeout=60,
-        )
-        response.raise_for_status()
-        response_data = response.json()
-        generated_code = response_data.get("response", "")
+    df = pd.read_csv(data_path, encoding='latin-1')
 
-        # specific to Ollama deepseek-r1:8b model only
-        generated_code = generated_code[generated_code.find("#START") + 6 : -3]
+    # Grouping data by HomePlanet and Transported status
+    grouped_data = df.groupby(['HomePlanet', 'Transported']).size().unstack(fill_value=0)
 
-        if not generated_code:
-            print("Failed to extract code from LLM response.")
-            print("Raw response:", generated_code)
-            return {"error": "Failed to extract valid code from LLM response."}
+    # Plotting the bar plot
+    ax = grouped_data.plot(kind='bar', stacked=False, color=['#1f77b4', '#ff7f0e'], figsize=(10, 6))
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error communicating with Ollama: {e}")
-        return {"error": f"Failed to generate code: Could not connect to LLM service."}
-    except Exception as e:
-        print(f"Error during code generation phase: {e}")
-        return {"error": f"Failed to generate code: {str(e)}"}
+    # Adding labels and title
+    plt.xlabel('Home Planet', fontsize=12)
+    plt.ylabel('Passenger Count', fontsize=12)
+    plt.title('Passenger Transported Status by Home Planet', fontsize=14)
+    plt.legend(title='Transported', labels=['False', 'True'])
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    # Save the plot
+    plt.savefig(output_image_path)
+    """
+    
+    generated_code = textwrap.dedent(generated_code)
+    
+    # try:
+    #     is_allowed_prompt = checkPrompt(prompt)
+    #     if not is_allowed_prompt:
+    #         return {"error": "Prompt contains disallowed content. 🚩🚩"}
+
+    #     print("Sending request to Ollama...")
+    #     response = requests.post(
+    #         "http://localhost:11434/api/generate",
+    #         json={"model": "deepseek-r1:8b", "prompt": input_text, "stream": False})
+
+    #     response.raise_for_status()
+    #     response_data = response.json()
+    #     generated_code = response_data.get("response", "")
+
+    #     # specific to Ollama deepseek-r1:8b model only
+    #     generated_code = generated_code[generated_code.find("#START") + 6 : -3]
+
+    #     if not generated_code:
+    #         print("Failed to extract code from LLM response.")
+    #         print("Raw response:", generated_code)
+    #         return {"error": "Failed to extract valid code from LLM response."}
+
+    # except requests.exceptions.RequestException as e:
+    #     print(f"Error communicating with Ollama: {e}")
+    #     return {"error": f"Failed to generate code: Could not connect to LLM service."}
+    # except Exception as e:
+    #     print(f"Error during code generation phase: {e}")
+    #     return {"error": f"Failed to generate code: {str(e)}"}
 
     # plot
     if generated_code:

@@ -8,10 +8,11 @@ import tempfile
 from pathlib import Path
 import os
 
-EXECUTOR_DIR = Path("/app/executor")
+EXECUTOR_DIR = Path(__file__).resolve().parent.parent.parent / "executor"
 EXECUTOR_DOCKERFILE_PATH = EXECUTOR_DIR
 EXECUTOR_CONTEXT_PATH = EXECUTOR_DIR
 IMAGE_NAME = "plot-executor:latest"
+
 
 def handle_code(code: str, file_content: str | None) -> bytes | None:
     """
@@ -136,12 +137,11 @@ def handle_code(code: str, file_content: str | None) -> bytes | None:
         finally:
             # Ensure container is stopped and removed if something went wrong and detach=True was used
             if container:
-               try:
-                   container.stop()
-                   container.remove()
-               except docker.errors.NotFound:
-                   pass # Already removed
-               except Exception as cleanup_err:
-                   print(f"Error during container cleanup: {cleanup_err}")
+                try:
+                    container.remove()
+                except docker.errors.NotFound:
+                    pass  # Already removed
+                except Exception as cleanup_err:
+                    print(f"Error during container cleanup: {cleanup_err}")
 
     return None  # Should not be reached if successful
