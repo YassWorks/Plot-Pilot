@@ -14,7 +14,7 @@ EXECUTOR_CONTEXT_PATH = EXECUTOR_DIR
 IMAGE_NAME = "plot-executor:latest"
 
 
-def handle_code(code: str, file_content: str | None) -> bytes | None:
+def handle_code(code: str, file_content: str) -> bytes | None:
     """
     Executes the provided Python code in an isolated Docker container.
 

@@ -31,8 +31,6 @@ def run_code(code_str, data_path, output_image_path):
         # --- Crucial: Ensure the plot is saved ---
         # The generated code MUST include a line like:
         # plt.savefig(output_image_path)
-        # Or if using seaborn/pandas plotting wrappers, ensure they use plt internally
-        # and the savefig call happens after the plot is generated.
 
         # Check if the file was actually saved
         if not os.path.exists(output_image_path):
