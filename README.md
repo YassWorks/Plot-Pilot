@@ -18,3 +18,4 @@ Your AI-powered data visualization assistant. Describe the plot you want, upload
 *   **Backend:** FastAPI, Python, Docker
 *   **Executor:** Matplotlib, Seaborn, Pandas, NumPy
 *   **LLM Integration:** Ollama (at the time of development)
+ 
